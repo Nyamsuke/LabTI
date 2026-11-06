@@ -1,33 +1,54 @@
 package dao;
 
-import config.Koneksi;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import model.User;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
+import util.HibernateUtil;
 
 public class UserDAO {
 
     public User login(String username, String password) {
-        String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
-        try (PreparedStatement ps = Koneksi.getConnection().prepareStatement(sql)) {
-            ps.setString(1, username);
-            ps.setString(2, password);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next() ? map(rs) : null;
-            }
-        } catch (SQLException ex) {
-            throw new RuntimeException("Gagal login: " + ex.getMessage(), ex);
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query<User> query = session.createQuery(
+                    "from User where username = :username and password = :password",
+                    User.class);
+            query.setParameter("username", username);
+            query.setParameter("password", password);
+            return query.uniqueResult();
+        } catch (RuntimeException ex) {
+            throw new RuntimeException("Gagal memvalidasi akun: " + ex.getMessage(), ex);
         }
     }
 
-    private User map(ResultSet rs) throws SQLException {
-        User user = new User();
-        user.setId(rs.getInt("id"));
-        user.setUsername(rs.getString("username"));
-        user.setPassword(rs.getString("password"));
-        user.setNama(rs.getString("nama"));
-        user.setRole(rs.getString("role"));
-        return user;
+    public boolean usernameExists(String username) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query<Long> query = session.createQuery(
+                    "select count(u) from User u where u.username = :username",
+                    Long.class);
+            query.setParameter("username", username);
+            Long jumlah = query.uniqueResult();
+            return jumlah != null && jumlah > 0;
+        } catch (RuntimeException ex) {
+            throw new RuntimeException("Gagal memeriksa username: " + ex.getMessage(), ex);
+        }
+    }
+
+    public User insert(User user) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            if (user.getRole() == null || user.getRole().isBlank()) {
+                user.setRole("user");
+            }
+            session.persist(user);
+            transaction.commit();
+            return user;
+        } catch (RuntimeException ex) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw new RuntimeException("Gagal menyimpan akun: " + ex.getMessage(), ex);
+        }
     }
 }

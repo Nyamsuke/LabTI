@@ -56,7 +56,7 @@ public class LoginForm extends JFrame {
         add(card, btnDaftar, 0);
 
         btnLogin.addActionListener(e -> login());
-        btnDaftar.addActionListener(e -> Dialog.info(this, "-"));
+        btnDaftar.addActionListener(e -> kembaliKeDaftar());
         getRootPane().setDefaultButton(btnLogin);
 
         JPanel root = new JPanel(new BorderLayout());
@@ -95,11 +95,20 @@ public class LoginForm extends JFrame {
             }
 
             Session.login(user);
-            Dialog.info(this, "Login berhasil. Selamat datang, " + user.getNama()
-                    + " (" + user.getRole() + ").");
-            txtPassword.setText("");
+            dispose();
+
+            if (user.isAdmin()) {
+                new DashboardAdmin().setVisible(true);
+            } else {
+                new DashboardUser().setVisible(true);
+            }
         } catch (RuntimeException ex) {
             Dialog.error(this, "Gagal terhubung ke database.\n\n" + ex.getMessage());
         }
+    }
+
+    private void kembaliKeDaftar() {
+        dispose();
+        new RegisterForm().setVisible(true);
     }
 }
