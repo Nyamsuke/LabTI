@@ -1,3 +1,4 @@
+
 package view;
 
 import java.awt.BorderLayout;
@@ -38,16 +39,7 @@ public class DashboardUser extends DashboardBase {
         judul.setForeground(Theme.TEXT);
         judul.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel info = new JLabel("<html>Login sebagai <b>user</b>. "
-                + "Menu <b>Pesan Layanan</b> akan ditambahkan pada Pertemuan 3, "
-                + "dan <b>Pesanan Saya</b> pada pertemuan berikutnya.</html>");
-        info.setFont(Theme.regular(13));
-        info.setForeground(Theme.MUTED);
-        info.setBorder(new EmptyBorder(10, 0, 0, 0));
-        info.setAlignmentX(Component.LEFT_ALIGNMENT);
-
         kartu.add(judul);
-        kartu.add(info);
         panel.add(kartu, BorderLayout.NORTH);
         return panel;
     }
