@@ -1,6 +1,7 @@
 package view;
 
 import dao.UserDAO;
+import main.Main; 
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -21,7 +22,9 @@ public class LoginForm extends JFrame {
 
     private final JTextField txtUsername = Theme.field(new JTextField(20));
     private final JPasswordField txtPassword = Theme.field(new JPasswordField(20));
-    private final UserDAO dao = new UserDAO();
+    
+    private final UserDAO dao = Main.getContext().getBean(UserDAO.class);
+    
     private int row;
 
     public LoginForm() {

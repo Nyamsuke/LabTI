@@ -1,28 +1,21 @@
+
 package util;
 
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public final class HibernateUtil {
 
-    private static final SessionFactory SESSION_FACTORY = build();
+    private static final ClassPathXmlApplicationContext CONTEXT =
+            new ClassPathXmlApplicationContext("applicationContext.xml");
 
     private HibernateUtil() {
     }
 
-    private static SessionFactory build() {
-        try {
-            return new Configuration().configure("hibernate.xml").buildSessionFactory();
-        } catch (Throwable ex) {
-            throw new ExceptionInInitializerError(ex);
-        }
-    }
-
-    public static SessionFactory getSessionFactory() {
-        return SESSION_FACTORY;
+    public static <T> T getBean(String name, Class<T> type) {
+        return CONTEXT.getBean(name, type);
     }
 
     public static void shutdown() {
-        SESSION_FACTORY.close();
+        CONTEXT.close();
     }
 }
