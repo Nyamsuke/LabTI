@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import main.Main;
 import model.User;
 import util.Dialog;
 import util.Theme;
@@ -22,7 +23,7 @@ public class RegisterForm extends JFrame {
     private final JTextField txtUsername = Theme.field(new JTextField(20));
     private final JPasswordField txtPassword = Theme.field(new JPasswordField(20));
     private final JPasswordField txtKonfirmasi = Theme.field(new JPasswordField(20));
-    private final UserDAO dao = new UserDAO();
+    private final UserDAO dao = Main.getContext().getBean(UserDAO.class);
     private int row;
 
     public RegisterForm() {

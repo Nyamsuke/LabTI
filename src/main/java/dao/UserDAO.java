@@ -2,16 +2,16 @@ package dao;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.TypedQuery;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceUnit;
-import org.springframework.stereotype.Repository;
+import jakarta.persistence.TypedQuery;
 import model.User;
+import org.springframework.stereotype.Repository;
 
-@Repository 
+@Repository
 public class UserDAO {
 
-    @PersistenceUnit 
+    @PersistenceUnit
     private EntityManagerFactory entityManagerFactory;
 
     public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
@@ -23,11 +23,11 @@ public class UserDAO {
         try {
             TypedQuery<User> query = em.createQuery(
                     "SELECT u FROM User u WHERE u.username = :username AND u.password = :password",
-                    User.class
-            );
+                    User.class);
             query.setParameter("username", username);
             query.setParameter("password", password);
-            return query.getResultStream().findFirst().orElse(null);
+            query.setMaxResults(1);
+            return query.getResultList().stream().findFirst().orElse(null);
         } finally {
             em.close();
         }
@@ -38,11 +38,10 @@ public class UserDAO {
         try {
             Long jumlah = em.createQuery(
                     "SELECT COUNT(u) FROM User u WHERE u.username = :username",
-                    Long.class
-            )
-            .setParameter("username", username)
-            .getSingleResult();
-            return jumlah > 0;
+                    Long.class)
+                    .setParameter("username", username)
+                    .getSingleResult();
+            return jumlah != null && jumlah > 0;
         } finally {
             em.close();
         }

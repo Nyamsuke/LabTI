@@ -1,5 +1,6 @@
 package view;
 
+import dao.LayananDAO;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import javax.swing.BorderFactory;
@@ -7,8 +8,11 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import main.Main;
 import util.Session;
 import util.Theme;
+import view.component.NavButton;
+import view.page.LayananPanel;
 
 public class DashboardAdmin extends DashboardBase {
 
@@ -17,6 +21,13 @@ public class DashboardAdmin extends DashboardBase {
         initDashboard("Admin Panel", 1280, 760);
         addNav("Beranda", "beranda", buatBeranda(),
                 "Dashboard", "Selamat datang di panel admin");
+
+        LayananDAO layananDAO = Main.getContext().getBean(LayananDAO.class);
+        LayananPanel layananPanel = new LayananPanel(layananDAO, true);
+        NavButton navLayanan = addNav("Kelola Layanan", "layanan", layananPanel,
+                "Kelola Layanan", "Tambah, ubah, hapus, dan atur status layanan");
+        navLayanan.addActionListener(e -> layananPanel.refresh());
+
         showPage("beranda", "Dashboard", "Selamat datang di panel admin");
     }
 
